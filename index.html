@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>toko zifa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('background.jpeg');
+            background-size: cover;      
+            background-position: center; 
+            background-attachment: fixed;  
+        }
+        .container {
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: hsl(0, 0%, 100%);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        /* Gaya Menu Grid 5x2 */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .menu-card {
+            background: hsl(20, 46%, 42%);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            border-color: #3498db;
+            background-color: #f8f9fa;
+        }
+        .menu-card i {
+            font-size: 24px;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        .menu-card h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .menu-card p {
+            margin: 5px 0 0;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        .content-area {
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .content-area h2 {
+         margin-bottom: 5px;
+        }
+        .content-area p {
+        margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            color: white !important;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.5) !important; /* Background header gelap */
+            color: white !important;
+            border: 1px solid #555 !important;
+        }
+        td {
+            border: 1px solid #555 !important;
+            background-color: rgba(0, 0, 0, 0.3) !important; /* Background sel transparan */
+        }
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        form div {
+            margin-bottom: 10px;
+        }
+        label {
+            color: white !important;
+            display: inline-block;
+            width: 150px;
+        }
+        input, select {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: white !important;              
+            background-color: #333 !important;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #27ae60;
+        }
+        button.delete {
+            background-color: #e74c3c;
+        }
+        button.delete:hover {
+            background-color: #c0392b;
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 300px;
+            margin-right: 10px;
+        }
+        .active-menu {
+            background-color: #e3f2fd;
+            border-color: #3498db;
+        }
+        @media (max-width: 1024px) {
+            .menu-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 480px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1><B>SISTEM MANAJEMEN TOKO KELONTONG</B></h1>
+
+        <div class="menu-grid" id="menu-container">
+        </div>
+
+        <div class="content-area" id="content-area">
+            <center><h2><B>Selamat datang di Martify</B></h2></center>
+            <center><h2><B>Silakan pilih menu di atas untuk memulai</B></h2></center>
+            </div>
+
+    <script>
+        // Inisialisasi data di localStorage jika belum ada
+        if (!localStorage.getItem('produkData')) {
+            localStorage.setItem('produkData', JSON.stringify([]));
+        }
+        if (!localStorage.getItem('pelangganData')) {
+            localStorage.setItem('pelangganData', JSON.stringify([]));
+        }
+        if (!localStorage.getItem('transaksiData')) {
+            localStorage.setItem('transaksiData', JSON.stringify([]));
+        }
+
+        // Fungsi untuk mendapatkan data dari localStorage
+        function getProdukData() {
+            return JSON.parse(localStorage.getItem('produkData'));
+        }
+
+        function getPelangganData() {
+            return JSON.parse(localStorage.getItem('pelangganData'));
+        }
+
+        function getTransaksiData() {
+            return JSON.parse(localStorage.getItem('transaksiData'));
+        }
+
+        // Fungsi untuk menyimpan data ke localStorage
+        function saveProdukData(data) {
+            localStorage.setItem('produkData', JSON.stringify(data));
+        }
+
+        function savePelangganData(data) {
+            localStorage.setItem('pelangganData', JSON.stringify(data));
+        }
+
+        function saveTransaksiData(data) {
+            localStorage.setItem('transaksiData', JSON.stringify(data));
+        }
+
+        function hapusProduk(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+                const produkData = getProdukData();
+                const newProdukData = produkData.filter(p => p.id !== id);
+                saveProdukData(newProdukData);
+                alert('Produk berhasil dihapus!');
+                showContent('stok');
+            }
+        }
+
+        function hapusPelanggan(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')) {
+                const pelangganData = getPelangganData();
+                const newPelangganData = pelangganData.filter(p => p.id !== id);
+                savePelangganData(newPelangganData);
+                alert('Pelanggan berhasil dihapus!');
+                showContent('daftar-pelanggan');
+            }
+        }
+
+        function hapusTransaksi(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
+                const transaksiData = getTransaksiData();
+                const newTransaksiData = transaksiData.filter(t => t.id !== id);
+                saveTransaksiData(newTransaksiData);
+                alert('Transaksi berhasil dihapus!');
+                
+                // Refresh tampilan tergantung menu aktif
+                const activeMenu = document.querySelector('.active-menu');
+                if (activeMenu) {
+                    showContent(activeMenu.dataset.menuId);
+                }
+            }
+        }
+
+        const menuItems = [
+            { 
+                id: 'produk',
+                icon: 'fas fa-box-open',
+                title: 'Entri Data Produk',
+                desc: 'Tambah/edit data produk'
+            },
+            { 
+                id: 'pelanggan',
+                icon: 'fas fa-users',
+                title: 'Entri Data Pelanggan', 
+                desc: 'Kelola data pelanggan'
+            },
+            { 
+                id: 'transaksi',
+                icon: 'fas fa-cash-register',
+                title: 'Transaksi Penjualan',
+                desc: 'Buat transaksi baru'
+            },
+            { 
+                id: 'stok',
+                icon: 'fas fa-warehouse',
+                title: 'Laporan Stok',
+                desc: 'Cek persediaan barang'
+            },
+            { 
+                id: 'daftar-pelanggan',
+                icon: 'fas fa-address-book',
+                title: 'Data Pelanggan',
+                desc: 'Lihat daftar pelanggan'
+            },
+            { 
+                id: 'cari-produk',
+                icon: 'fas fa-search',
+                title: 'Cari Produk',
+                desc: 'Temukan produk cepat'
+            },
+            { 
+                id: 'faktur',
+                icon: 'fas fa-receipt',
+                title: 'Faktur Penjualan',
+                desc: 'Cetak/lihat faktur'
+            },
+            { 
+                id: 'rekap-harian',
+                icon: 'fas fa-calendar-day',
+                title: 'Rekap Harian',
+                desc: 'Laporan penjualan harian'
+            },
+            { 
+                id: 'rekap-bulanan',
+                icon: 'fas fa-calendar-alt',
+                title: 'Rekap Bulanan',
+                desc: 'Laporan bulanan'
+            },
+            { 
+                id: 'rekap-tahunan',
+                icon: 'fas fa-calendar',
+                title: 'Rekap Tahunan',
+                desc: 'Laporan tahunan'
+            }
+        ];
+
+        const menuContainer = document.getElementById('menu-container');
+        menuItems.forEach(item => {
+            const menuCard = document.createElement('div');
+            menuCard.className = 'menu-card';
+            menuCard.dataset.menuId = item.id;
+            menuCard.innerHTML = `
+                <i class="${item.icon}"></i>
+                <h3>${item.title}</h3>
+                <p>${item.desc}</p>
+            `;
+            menuContainer.appendChild(menuCard);
+        });
+
+        document.getElementById('menu-container').addEventListener('click', function(e) {
+            const menuCard = e.target.closest('.menu-card');
+            if (menuCard) {
+                document.querySelectorAll('.menu-card').forEach(card => {
+                    card.classList.remove('active-menu');
+                });
+                
+                menuCard.classList.add('active-menu');
+                
+                showContent(menuCard.dataset.menuId);
+            }
+        });
+
+        function showContent(menu) {
+            const contentArea = document.getElementById('content-area');
+            
+            switch(menu) {
+                case 'produk':
+                    contentArea.innerHTML = `
+                        <center><h2>Entri Data Produk</h2></center>
+                        <br>
+                        <form id="produk-form">
+                            <div>
+                                <center><label for="nama-produk">Nama Produk:</label>
+                                <input type="text" id="nama-produk" required></center>
+                            </div>
+                            <div>
+                                <center><label for="harga">Harga:</label>
+                                <input type="number" id="harga" required></center>
+                            </div>
+                            <div>
+                                <center><label for="stok">Stok:</label>
+                                <input type="number" id="stok" required></center>
+                            </div>
+                            <div>
+                                <center><label for="kategori">Kategori:</label>
+                                <input type="text" id="kategori" required></center>
+                            </div>
+                            <center><button type="submit">Simpan</button></center>
+                        </form>
+                    `;
+                    
+                    document.getElementById('produk-form').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        const produkData = getProdukData();
+                        const newProduk = {
+                            id: produkData.length > 0 ? Math.max(...produkData.map(p => p.id)) + 1 : 1,
+                            nama: document.getElementById('nama-produk').value,
+                            harga: parseInt(document.getElementById('harga').value),
+                            stok: parseInt(document.getElementById('stok').value),
+                            kategori: document.getElementById('kategori').value
+                        };
+                        
+                        produkData.push(newProduk);
+                        saveProdukData(produkData);
+                        
+                        alert('Data produk berhasil disimpan!');
+                        document.getElementById('produk-form').reset();
+                    });
+                    break;
+                    
+                case 'pelanggan':
+                    contentArea.innerHTML = `
+                        <center><h2>Entri Data Pelanggan</h2></center>
+                        <br>
+                        <form id="pelanggan-form">
+                            <div>
+                                <center><label for="nama-pelanggan">Nama Pelanggan:</label>
+                                <input type="text" id="nama-pelanggan" required></center>
+                            </div>
+                            <div>
+                                <center><label for="alamat">Alamat:</label>
+                                <input type="text" id="alamat" required></center>
+                            </div>
+                            <div>
+                                <center><label for="telepon">Telepon:</label>
+                                <input type="text" id="telepon" required></center>
+                            </div>
+                            <center><button type="submit">Simpan</button></center>
+                        </form>
+                    `;
+                    
+                    document.getElementById('pelanggan-form').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        const pelangganData = getPelangganData();
+                        const newPelanggan = {
+                            id: pelangganData.length > 0 ? Math.max(...pelangganData.map(p => p.id)) + 1 : 1,
+                            nama: document.getElementById('nama-pelanggan').value,
+                            alamat: document.getElementById('alamat').value,
+                            telepon: document.getElementById('telepon').value
+                        };
+                        
+                        pelangganData.push(newPelanggan);
+                        savePelangganData(pelangganData);
+                        
+                        alert('Data pelanggan berhasil disimpan!');
+                        document.getElementById('pelanggan-form').reset();
+                    });
+                    break;
+                    
+                case 'transaksi':
+                    const produkData = getProdukData();
+                    const pelangganData = getPelangganData();
+                    
+                    contentArea.innerHTML = `
+                        <center><h2>Entri Transaksi Penjualan</h2></center>
+                        <br>
+                        <form id="transaksi-form">
+                            <div>
+                                <center><label for="tanggal-transaksi">Tanggal:</label>
+                                <input type="date" id="tanggal-transaksi" required></center>
+                            </div>
+                            <div>
+                                <center><label for="pelanggan-transaksi">Pelanggan:</label>
+                                <select id="pelanggan-transaksi" required></center>
+                                    <option value="">Pilih Pelanggan</option>
+                                    ${pelangganData.map(p => `<option value="${p.id}">${p.nama}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <center><label for="produk-transaksi">Produk:</label>
+                                <select id="produk-transaksi" required></center>
+                                    <option value="">Pilih Produk</option>
+                                    ${produkData.map(p => `<option value="${p.id}">${p.nama} (Rp${p.harga.toLocaleString()})</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <center><label for="jumlah">Jumlah:</label>
+                                <input type="number" id="jumlah" min="1" required></center>
+                            </div>
+                            <center><button type="submit">Simpan Transaksi</button></center>
+                        </form>
+                    `;
+                    
+                    document.getElementById('transaksi-form').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        const transaksiData = getTransaksiData();
+                        const produkId = parseInt(document.getElementById('produk-transaksi').value);
+                        const jumlah = parseInt(document.getElementById('jumlah').value);
+                        
+                        // Cari produk yang dipilih
+                        const produk = getProdukData().find(p => p.id === produkId);
+                        
+                        const newTransaksi = {
+                            id: transaksiData.length > 0 ? Math.max(...transaksiData.map(t => t.id)) + 1 : 1,
+                            tanggal: document.getElementById('tanggal-transaksi').value,
+                            pelangganId: parseInt(document.getElementById('pelanggan-transaksi').value),
+                            produkId: produkId,
+                            jumlah: jumlah,
+                            total: produk.harga * jumlah
+                        };
+                        
+                        transaksiData.push(newTransaksi);
+                        saveTransaksiData(transaksiData);
+                        
+                        // Update stok produk
+                        const produkData = getProdukData();
+                        const produkIndex = produkData.findIndex(p => p.id === produkId);
+                        if (produkIndex !== -1) {
+                            produkData[produkIndex].stok -= jumlah;
+                            saveProdukData(produkData);
+                        }
+                        
+                        alert('Transaksi berhasil disimpan!');
+                        document.getElementById('transaksi-form').reset();
+                    });
+                    break;
+                    
+                case 'stok':
+                    const stokData = getProdukData();
+                    contentArea.innerHTML = `
+                        <center><h2>Laporan Stok Barang</h2></center>
+                        <br>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <center><th>ID</th></center>
+                                    <center><th>Nama Produk</th></center>
+                                    <center><th>Harga</th></center>
+                                    <center><th>Stok</th></center>
+                                    <center><th>Kategori</th></center>
+                                    <center><th>Aksi</th></center>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${stokData.map(p => `
+                                    <tr>
+                                        <td>${p.id}</td>
+                                        <td>${p.nama}</td>
+                                        <td>Rp${p.harga.toLocaleString()}</td>
+                                        <td>${p.stok}</td>
+                                        <td>${p.kategori}</td>
+                                        <td>
+                                            <button onclick="hapusProduk(${p.id})">Hapus</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    break;
+                    
+                case 'daftar-pelanggan':
+                    const pelangganDataReport = getPelangganData();
+                    contentArea.innerHTML = `
+                        <center><h2>Laporan Data Pelanggan</h2></center>
+                        <br>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama Pelanggan</th>
+                                    <th>Alamat</th>
+                                    <th>Telepon</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${pelangganDataReport.map(p => `
+                                    <tr>
+                                        <td>${p.id}</td>
+                                        <td>${p.nama}</td>
+                                        <td>${p.alamat}</td>
+                                        <td>${p.telepon}</td>
+                                        <td>
+                                            <button onclick="hapusPelanggan(${p.id})">Hapus</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    break;
+                    
+                case 'cari-produk':
+                    contentArea.innerHTML = `
+                        <center><h2>Cari Produk</h2></center>
+                        <br>
+                        <div class="search-box">
+                            <center><input type="text" id="search-input" placeholder="Cari produk...">
+                            <button onclick="searchProduct()">Cari</button></center>
+                        </div>
+                        <div id="search-results">
+                            <center><p>Masukkan kata kunci pencarian di atas.</p></center>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'faktur':
+                    contentArea.innerHTML = `
+                        <center><h2>Faktur Penjualan</h2></center>
+                        <br>
+                        <div>
+                            <center><label for="no-faktur">Nomor Faktur:</label>
+                            <input type="text" id="no-faktur" placeholder="Masukkan nomor faktur">
+                            <button onclick="showInvoice()">Tampilkan</button></center>
+                        </div>
+                        <div id="invoice-details" style="margin-top: 20px;">
+                            <center><p>Masukkan nomor faktur untuk menampilkan detail.</p></center>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'rekap-harian':
+                    contentArea.innerHTML = `
+                        <center><h2>Rekapitulasi Penjualan Harian</h2></center>
+                        <br>
+                        <div>
+                            <center><label for="tanggal-rekap">Pilih Tanggal:</label>
+                            <input type="date" id="tanggal-rekap">
+                            <button onclick="filterRekapHarian()">Filter</button></center>
+                        </div>
+                        <div id="rekap-harian-result">
+                            <br>
+                            <center><p>Pilih tanggal untuk melihat rekap harian.</p></center>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'rekap-bulanan':
+                    contentArea.innerHTML = `
+                        <center><h2>Rekapitulasi Penjualan Bulanan</h2></center>
+                        <br>
+                        <div>
+                            <center><label for="bulan-rekap">Pilih Bulan:</label>
+                            <input type="month" id="bulan-rekap">
+                            <button onclick="filterRekapBulanan()">Filter</button></center>
+                        </div>
+                        <div id="rekap-bulanan-result">
+                            <br>
+                            <center><p>Pilih bulan untuk melihat rekap bulanan.</p></center>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'rekap-tahunan':
+                    contentArea.innerHTML = `
+                        <center><h2>Rekapitulasi Penjualan Tahunan</h2></center>
+                        <br>
+                        <div>
+                            <center><label for="tahun-rekap">Pilih Tahun:</label>
+                            <input type="number" id="tahun-rekap" min="2000" max="2100" step="1" value="2025">
+                            <button onclick="filterRekapTahunan()">Filter</button></center>
+                        </div>
+                        <div id="rekap-tahunan-result">
+                            <br>
+                            <center><p>Pilih tahun untuk melihat rekap tahunan.</p></center>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    contentArea.innerHTML = `
+                        <h2>Selamat datang di Sistem Manajemen Toko Kelontong</h2>
+                        <p>Silakan pilih menu di atas untuk memulai.</p>
+                    `;
+            }
+        }
+        
+        function searchProduct() {
+            const keyword = document.getElementById('search-input').value.toLowerCase();
+            const resultsDiv = document.getElementById('search-results');
+            const produkData = getProdukData();
+            
+            const filtered = produkData.filter(p => 
+                p.nama.toLowerCase().includes(keyword) || 
+                p.kategori.toLowerCase().includes(keyword)
+            );
+            
+            if (filtered.length > 0) {
+                resultsDiv.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <center><th>Nama Produk</th></center>
+                                <center><th>Harga</th></center>
+                                <center><th>Stok</th></center>
+                                <center><th>Kategori</th></center>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filtered.map(p => `
+                                <tr>
+                                    <td>${p.nama}</td>
+                                    <td>Rp${p.harga.toLocaleString()}</td>
+                                    <td>${p.stok}</td>
+                                    <td>${p.kategori}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                resultsDiv.innerHTML = `<center><p>Tidak ditemukan produk dengan kata kunci '${keyword}'.</p>`;
+            }
+        }
+        
+        function showInvoice() {
+            const noFaktur = document.getElementById('no-faktur').value;
+            const invoiceDiv = document.getElementById('invoice-details');
+            
+            if (noFaktur) {
+                const transaksiData = getTransaksiData();
+                const pelangganData = getPelangganData();
+                const produkData = getProdukData();
+                
+                const transaksi = transaksiData.find(t => t.id == noFaktur);
+                
+                if (transaksi) {
+                    const pelanggan = pelangganData.find(p => p.id === transaksi.pelangganId);
+                    const produk = produkData.find(p => p.id === transaksi.produkId);
+                    
+                    invoiceDiv.innerHTML = `
+                        <h3>Faktur #${transaksi.id}</h3>
+                        <p>Tanggal: ${transaksi.tanggal}</p>
+                        <p>Pelanggan: ${pelanggan ? pelanggan.nama : 'Tidak diketahui'}</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Produk</th>
+                                    <th>Harga</th>
+                                    <th>Jumlah</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>${produk ? produk.nama : 'Produk tidak ditemukan'}</td>
+                                    <td>Rp${produk ? produk.harga.toLocaleString() : '0'}</td>
+                                    <td>${transaksi.jumlah}</td>
+                                    <td>Rp${transaksi.total.toLocaleString()}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3">Total</th>
+                                    <th>Rp${transaksi.total.toLocaleString()}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    `;
+                } else {
+                    invoiceDiv.innerHTML = `<center><p>Faktur dengan nomor ${noFaktur} tidak ditemukan.</p></center>`;
+                }
+            } else {
+                invoiceDiv.innerHTML = `<center><p>Masukkan nomor faktur untuk menampilkan detail.</p></center>`;
+            }
+        }
+        
+        function filterRekapHarian() {
+            const tanggal = document.getElementById('tanggal-rekap').value;
+            const resultDiv = document.getElementById('rekap-harian-result');
+            const transaksiData = getTransaksiData();
+            
+            if (tanggal) {
+                const filtered = transaksiData.filter(t => t.tanggal === tanggal);
+                
+                if (filtered.length > 0) {
+                    const totalPenjualan = filtered.reduce((sum, t) => sum + t.total, 0);
+                    
+                    resultDiv.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Transaksi</th>
+                                    <th>Produk</th>
+                                    <th>Jumlah</th>
+                                    <th>Total</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filtered.map(t => {
+                                    const produk = getProdukData().find(p => p.id === t.produkId);
+                                    return `
+                                        <tr>
+                                            <td>${t.id}</td>
+                                            <td>${produk ? produk.nama : 'Produk tidak ditemukan'}</td>
+                                            <td>${t.jumlah}</td>
+                                            <td>Rp${t.total.toLocaleString()}</td>
+                                            <td>
+                                                <button onclick="hapusTransaksi(${t.id})">Hapus</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3">Total Penjualan</th>
+                                    <th>Rp${totalPenjualan.toLocaleString()}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<center><p>Tidak ada transaksi pada tanggal ${tanggal}.</p></center>`;
+                }
+            } else {
+                resultDiv.innerHTML = `<center><p>Silakan pilih tanggal terlebih dahulu.</p></center>`;
+            }
+        }
+        
+        function filterRekapBulanan() {
+            const bulan = document.getElementById('bulan-rekap').value;
+            const resultDiv = document.getElementById('rekap-bulanan-result');
+            const transaksiData = getTransaksiData();
+            
+            if (bulan) {
+                const [tahun, bulanAngka] = bulan.split('-');
+                const filtered = transaksiData.filter(t => {
+                    const [tTransaksi, bTransaksi] = t.tanggal.split('-').slice(0, 2);
+                    return tTransaksi === tahun && bTransaksi === bulanAngka;
+                });
+                
+                if (filtered.length > 0) {
+                    const totalPenjualan = filtered.reduce((sum, t) => sum + t.total, 0);
+                    
+                    resultDiv.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Jumlah Transaksi</th>
+                                    <th>Total Penjualan</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Array.from(new Set(filtered.map(t => t.tanggal))).map(tanggal => {
+                                    const transaksiHarian = filtered.filter(t => t.tanggal === tanggal);
+                                    const totalHarian = transaksiHarian.reduce((sum, t) => sum + t.total, 0);
+                                    return `
+                                        <tr>
+                                            <td>${tanggal}</td>
+                                            <td>${transaksiHarian.length}</td>
+                                            <td>Rp${totalHarian.toLocaleString()}</td>
+                                            <td>
+                                                <button onclick="hapusTransaksi(${t.id})">Hapus</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total Bulanan</th>
+                                    <th>${filtered.length}</th>
+                                    <th>Rp${totalPenjualan.toLocaleString()}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<center><p>Tidak ada transaksi pada bulan ${bulan}.</p></center>`;
+                }
+            } else {
+                resultDiv.innerHTML = `<center><p>Silakan pilih bulan terlebih dahulu.</p></center>`;
+            }
+        }
+        
+        function filterRekapTahunan() {
+            const tahun = document.getElementById('tahun-rekap').value;
+            const resultDiv = document.getElementById('rekap-tahunan-result');
+            const transaksiData = getTransaksiData();
+            
+            if (tahun) {
+                const filtered = transaksiData.filter(t => t.tanggal.startsWith(tahun));
+                
+                if (filtered.length > 0) {
+                    const totalPenjualan = filtered.reduce((sum, t) => sum + t.total, 0);
+                    
+                    resultDiv.innerHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Bulan</th>
+                                    <th>Jumlah Transaksi</th>
+                                    <th>Total Penjualan</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Array.from(new Set(filtered.map(t => t.tanggal.substring(0, 7)))).map(bulan => {
+                                    const transaksiBulanan = filtered.filter(t => t.tanggal.startsWith(bulan));
+                                    const totalBulanan = transaksiBulanan.reduce((sum, t) => sum + t.total, 0);
+                                    return `
+                                        <tr>
+                                            <td>${bulan}</td>
+                                            <td>${transaksiBulanan.length}</td>
+                                            <td>Rp${totalBulanan.toLocaleString()}</td>
+                                            <td>
+                                                <button onclick="hapusTransaksi(${t.id})">Hapus</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total Tahunan</th>
+                                    <th>${filtered.length}</th>
+                                    <th>Rp${totalPenjualan.toLocaleString()}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<center><p>Tidak ada transaksi pada tahun ${tahun}.</p></center>`;
+                }
+            } else {
+                resultDiv.innerHTML = `<center><p>Silakan pilih tahun terlebih dahulu.</p></center>`;
+            }
+        }
+    </script>
+</body>
+</html>
